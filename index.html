@@ -1,76 +1,392 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>手机维修视频站</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机维修视频站 - 专业维修指南与配件</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <h1>手机维修视频站</h1>
-      <p>按品牌、型号、故障部位查找维修视频</p>
-    </div>
-  </header>
+    <!-- 顶部横幅 -->
+    <header class="topbar">
+        <div class="container">
+            <div class="topbar-content">
+                <div class="site-branding">
+                    <h1>手机维修视频站</h1>
+                    <p class="tagline">专业维修指南 · 正品配件 · 社区支持</p>
+                </div>
+                <div class="topbar-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">5,280+</span>
+                        <span class="stat-label">维修指南</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2,150+</span>
+                        <span class="stat-label">正品配件</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98.7%</span>
+                        <span class="stat-label">成功率</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <main class="layout">
-    <aside class="sidebar">
-      <section class="panel">
-        <h2>品牌</h2>
+    <!-- 全局导航栏 -->
+    <nav class="global-nav">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-tools"></i>
+                <span>手机维修站</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active"><i class="fas fa-book"></i> 维修指南</a></li>
+                <li><a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i> 配件商店</a></li>
+                <li><a href="#" class="nav-link"><i class="fas fa-screwdriver-wrench"></i> 拆解评测</a></li>
+                <li><a href="#" class="nav-link"><i class="fas fa-users"></i> 社区问答</a></li>
+                <li><a href="#" class="nav-link"><i class="fas fa-toolbox"></i> 维修工具</a></li>
+                <li><a href="#" class="nav-link"><i class="fas fa-info-circle"></i> 关于我们</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="nav-search">
+                    <input type="text" placeholder="搜索型号、故障或配件..." id="globalSearchInput">
+                    <button type="button"><i class="fas fa-search"></i></button>
+                </div>
+                <button class="btn-secondary"><i class="fas fa-user"></i> 登录/注册</button>
+            </div>
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
-        <button class="brand-btn active" data-brand="apple">Apple / iPhone</button>
-        <button class="brand-btn disabled">Samsung / 待扩展</button>
-        <button class="brand-btn disabled">Huawei / 待扩展</button>
-        <button class="brand-btn disabled">Xiaomi / 待扩展</button>
-        <button class="brand-btn disabled">OPPO / 待扩展</button>
-        <button class="brand-btn disabled">vivo / 待扩展</button>
-      </section>
-
-      <section class="panel">
-        <h2>iPhone 型号</h2>
-        <div id="modelList" class="model-list"></div>
-      </section>
-    </aside>
-
-    <section class="content">
-      <section class="panel">
-        <p class="breadcrumb">
-          Apple > <span id="currentModel">iPhone 15</span> > <span id="currentPart">屏幕</span>
-        </p>
-
-        <h2 id="pageTitle">iPhone 15 维修视频</h2>
-
-        <input
-          id="searchInput"
-          class="search"
-          type="text"
-          placeholder="搜索型号、故障、视频标题"
-        />
-      </section>
-
-      <section class="panel">
-        <h2>故障部位</h2>
-        <div id="partList" class="part-grid"></div>
-      </section>
-
-      <section class="repair-result-layout">
-        <section class="panel videos-panel">
-          <h2>对应维修视频</h2>
-          <div id="videoList" class="video-grid"></div>
-        </section>
-
-        <section class="panel products-panel">
-          <div class="panel-title-row">
-            <h2>对应配件商品</h2>
-            <span class="product-hint">商品页占位，暂不跳转购买</span>
-          </div>
-          <div id="productList" class="product-grid"></div>
-        </section>
-      </section>
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>让维修变得简单</h2>
+                <p>通过高质量的维修指南、正品配件和强大的社区支持，延长您的设备寿命，保护环境。</p>
+                <div class="hero-search">
+                    <input type="text" placeholder="输入您的设备型号，如 iPhone 15 Pro Max..." id="heroSearch">
+                    <button class="btn-primary">查找维修指南</button>
+                </div>
+                <div class="hero-tags">
+                    <span class="tag">iPhone 电池更换</span>
+                    <span class="tag">三星屏幕维修</span>
+                    <span class="tag">华为充电口</span>
+                    <span class="tag">小米后盖</span>
+                    <span class="tag">OPPO摄像头</span>
+                </div>
+            </div>
+        </div>
     </section>
-  </main>
 
-  <script src="script.js"></script>
+    <!-- 主要内容区域 -->
+    <main class="layout container">
+        <div class="content-wrapper">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3><i class="fas fa-mobile-alt"></i> 选择品牌</h3>
+                    <div class="brand-buttons">
+                        <button class="brand-btn active" data-brand="apple">
+                            <i class="fab fa-apple"></i> Apple / iPhone
+                        </button>
+                        <button class="brand-btn" data-brand="samsung" disabled>
+                            <i class="fas fa-mobile"></i> Samsung
+                        </button>
+                        <button class="brand-btn" data-brand="huawei" disabled>
+                            <i class="fas fa-mobile"></i> Huawei
+                        </button>
+                        <button class="brand-btn" data-brand="xiaomi" disabled>
+                            <i class="fas fa-mobile"></i> Xiaomi
+                        </button>
+                        <button class="brand-btn" data-brand="oppo" disabled>
+                            <i class="fas fa-mobile"></i> OPPO
+                        </button>
+                        <button class="brand-btn" data-brand="vivo" disabled>
+                            <i class="fas fa-mobile"></i> Vivo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h3><i class="fas fa-list"></i> iPhone 型号</h3>
+                    <div class="model-list" id="modelList">
+                        <!-- 型号按钮将由 script.js 动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="panel sidebar-support">
+                    <h3><i class="fas fa-question-circle"></i> 需要帮助？</h3>
+                    <p>不确定您的设备型号？查看我们的<a href="#">识别指南</a>。</p>
+                    <p>维修遇到问题？访问<a href="#">社区论坛</a>获取帮助。</p>
+                    <button class="btn-outline">
+                        <i class="fas fa-download"></i> 下载维修手册
+                    </button>
+                </div>
+            </aside>
+
+            <!-- 主内容区 -->
+            <div class="content">
+                <!-- 热门维修指南模块 -->
+                <section class="panel featured-guides">
+                    <div class="section-header">
+                        <h2><i class="fas fa-fire"></i> 热门维修指南</h2>
+                        <a href="#" class="view-all">查看全部 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="guide-grid">
+                        <article class="guide-card">
+                            <div class="guide-thumb">
+                                <img src="https://via.placeholder.com/300x180/3b82f6/ffffff?text=iPhone+Battery" alt="iPhone 电池更换">
+                                <span class="difficulty-badge easy">简单</span>
+                            </div>
+                            <div class="guide-info">
+                                <h3>iPhone 电池更换终极指南</h3>
+                                <p>涵盖 iPhone X 至 iPhone 15 系列，详细讲解电池更换步骤与安全注意事项。</p>
+                                <div class="guide-meta">
+                                    <span class="meta-item"><i class="far fa-clock"></i> 30-45分钟</span>
+                                    <span class="meta-item"><i class="fas fa-tools"></i> 中等工具</span>
+                                    <span class="meta-item"><i class="fas fa-star"></i> 4.8/5.0</span>
+                                </div>
+                                <a href="#" class="guide-link">查看完整指南</a>
+                            </div>
+                        </article>
+                        
+                        <article class="guide-card">
+                            <div class="guide-thumb">
+                                <img src="https://via.placeholder.com/300x180/10b981/ffffff?text=Screen+Replacement" alt="屏幕更换">
+                                <span class="difficulty-badge medium">中等</span>
+                            </div>
+                            <div class="guide-info">
+                                <h3>iPhone 屏幕更换指南</h3>
+                                <p>从 iPhone 12 到最新型号的屏幕更换教程，包含显示器和触摸屏修复。</p>
+                                <div class="guide-meta">
+                                    <span class="meta-item"><i class="far fa-clock"></i> 45-60分钟</span>
+                                    <span class="meta-item"><i class="fas fa-tools"></i> 专业工具</span>
+                                    <span class="meta-item"><i class="fas fa-star"></i> 4.6/5.0</span>
+                                </div>
+                                <a href="#" class="guide-link">查看完整指南</a>
+                            </div>
+                        </article>
+                        
+                        <article class="guide-card">
+                            <div class="guide-thumb">
+                                <img src="https://via.placeholder.com/300x180/8b5cf6/ffffff?text=Charging+Port" alt="充电口维修">
+                                <span class="difficulty-badge hard">困难</span>
+                            </div>
+                            <div class="guide-info">
+                                <h3>充电端口维修教程</h3>
+                                <p>解决充电问题、数据连接故障，适用于多款 iPhone 型号的 Lightning 端口更换。</p>
+                                <div class="guide-meta">
+                                    <span class="meta-item"><i class="far fa-clock"></i> 60-90分钟</span>
+                                    <span class="meta-item"><i class="fas fa-tools"></i> 专业工具</span>
+                                    <span class="meta-item"><i class="fas fa-star"></i> 4.4/5.0</span>
+                                </div>
+                                <a href="#" class="guide-link">查看完整指南</a>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- 设备分类快速入口 -->
+                <section class="panel device-categories">
+                    <h2><i class="fas fa-th-large"></i> 按设备类型查找</h2>
+                    <div class="category-grid">
+                        <a href="#" class="category-card" data-brand="apple">
+                            <div class="category-icon">
+                                <i class="fab fa-apple"></i>
+                            </div>
+                            <h3>iPhone</h3>
+                            <p>屏幕、电池、摄像头等维修</p>
+                            <span class="device-count">2,850个指南</span>
+                        </a>
+                        <a href="#" class="category-card" data-brand="samsung">
+                            <div class="category-icon">
+                                <i class="fas fa-mobile"></i>
+                            </div>
+                            <h3>Samsung</h3>
+                            <p>Galaxy系列维修指南</p>
+                            <span class="device-count">1,240个指南</span>
+                        </a>
+                        <a href="#" class="category-card" data-brand="huawei">
+                            <div class="category-icon">
+                                <i class="fas fa-mobile"></i>
+                            </div>
+                            <h3>Huawei</h3>
+                            <p>P系列、Mate系列维修</p>
+                            <span class="device-count">980个指南</span>
+                        </a>
+                        <a href="#" class="category-card" data-brand="xiaomi">
+                            <div class="category-icon">
+                                <i class="fas fa-mobile"></i>
+                            </div>
+                            <h3>Xiaomi</h3>
+                            <p>小米、红米系列维修</p>
+                            <span class="device-count">760个指南</span>
+                        </a>
+                        <a href="#" class="category-card" data-brand="other">
+                            <div class="category-icon">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                            <h3>其他品牌</h3>
+                            <p>OPPO、Vivo、OnePlus等</p>
+                            <span class="device-count">450个指南</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- 维修指南筛选区域 -->
+                <div class="panel">
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span>首页</span> > <span>Apple</span> > <span>iPhone 15</span> > <span>屏幕</span>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 id="pageTitle">iPhone 15 屏幕维修指南</h2>
+                        <div class="search-container">
+                            <input type="text" id="searchInput" placeholder="在结果中搜索...">
+                            <button id="searchButton"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- 故障部位选择 -->
+                    <div class="parts-section">
+                        <h3><i class="fas fa-cogs"></i> 选择故障部位</h3>
+                        <div class="part-grid" id="partList">
+                            <!-- 部位按钮将由 script.js 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 维修结果展示区 -->
+                <div class="repair-result-layout">
+                    <!-- 左侧：视频列表 -->
+                    <div class="video-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-video"></i> 维修视频</h3>
+                            <div class="result-count">找到 <span id="videoCount">0</span> 个相关视频</div>
+                        </div>
+                        <div class="video-grid" id="videoList">
+                            <!-- 视频卡片将由 script.js 动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：配件商品 -->
+                    <div class="product-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-shopping-bag"></i> 推荐配件</h3>
+                            <div class="result-count">找到 <span id="productCount">0</span> 个相关商品</div>
+                        </div>
+                        <div class="product-grid" id="productList">
+                            <!-- 商品卡片将由 script.js 动态生成 -->
+                        </div>
+                        <div class="product-disclaimer">
+                            <p><i class="fas fa-info-circle"></i> 商品信息仅供参考，购买前请核实兼容性。我们可能与部分商家有合作，但不影响推荐客观性。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 社区与支持模块 -->
+                <section class="panel community-support">
+                    <h2><i class="fas fa-hands-helping"></i> 需要更多帮助？</h2>
+                    <div class="community-grid">
+                        <div class="community-card">
+                            <div class="community-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3>社区论坛</h3>
+                            <p>与超过50,000名维修爱好者交流经验，提问并获得解答。</p>
+                            <a href="#" class="community-link">访问论坛</a>
+                        </div>
+                        <div class="community-card">
+                            <div class="community-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h3>维修问答</h3>
+                            <p>常见问题解答，涵盖各种维修难题和解决方案。</p>
+                            <a href="#" class="community-link">查看问答</a>
+                        </div>
+                        <div class="community-card">
+                            <div class="community-icon">
+                                <i class="fas fa-toolbox"></i>
+                            </div>
+                            <h3>工具租赁</h3>
+                            <p>没有专业工具？我们提供高质量维修工具租赁服务。</p>
+                            <a href="#" class="community-link">了解详情</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <i class="fas fa-tools"></i>
+                    <h3>手机维修视频站</h3>
+                </div>
+                <p>我们致力于提供最全面、最专业的手机维修指南和正品配件信息，帮助您延长设备寿命，减少电子废弃物。</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-weibo"></i></a>
+                    <a href="#"><i class="fab fa-weixin"></i></a>
+                    <a href="#"><i class="fab fa-qq"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 维修指南</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 配件商店</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 拆解评测</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 社区论坛</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>支持</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 帮助中心</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 联系我们</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 常见问题</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 投稿指南</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>法律</h4>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 隐私政策</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 服务条款</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> 免责声明</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Cookie政策</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>订阅资讯</h4>
+                <p>获取最新的维修指南和优惠信息</p>
+                <div class="newsletter-form">
+                    <input type="email" placeholder="输入您的邮箱">
+                    <button class="btn-primary">订阅</button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>© 2026 手机维修视频站. 本站内容基于知识共享许可分享。数据来源：iFixit、厂商手册与社区贡献。</p>
+                <div class="footer-links">
+                    <a href="#">English</a> | 
+                    <a href="#">简体中文</a> | 
+                    <a href="#">繁體中文</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
