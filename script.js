@@ -1,287 +1,586 @@
-// 数据定义
-const models = [
-    "iPhone 17 Pro Max", "iPhone 17 Pro", "iPhone 17 Plus", "iPhone 17",
+// 一级分类数据
+const categories = [
+  { id: "phone", name: "手机维修", icon: "📱", description: "智能手机和平板手机维修" },
+  { id: "computer", name: "电脑维修", icon: "💻", description: "笔记本电脑和台式机维修" },
+  { id: "tablet", name: "平板维修", icon: "📱", description: "平板电脑和电子阅读器" },
+  { id: "appliance", name: "家电维修", icon: "🏠", description: "家用电器和智能家居" },
+  { id: "gaming", name: "游戏主机", icon: "🎮", description: "游戏机和游戏设备" },
+  { id: "camera", name: "相机维修", icon: "📷", description: "相机和摄影设备" },
+  { id: "wearable", name: "智能穿戴", icon: "⌚", description: "智能手表和健身设备" },
+  { id: "other", name: "其他设备", icon: "🔧", description: "其他电子设备维修" }
+];
+
+// 品牌数据（按分类组织）
+const brandsByCategory = {
+  phone: [
+    { id: "apple", name: "Apple / iPhone", enabled: true },
+    { id: "samsung", name: "Samsung / 三星", enabled: true },
+    { id: "huawei", name: "Huawei / 华为", enabled: true },
+    { id: "xiaomi", name: "Xiaomi / 小米", enabled: true },
+    { id: "oppo", name: "OPPO", enabled: true },
+    { id: "vivo", name: "vivo", enabled: true },
+    { id: "oneplus", name: "OnePlus / 一加", enabled: false },
+    { id: "google", name: "Google Pixel", enabled: false }
+  ],
+  computer: [
+    { id: "apple-mac", name: "Apple Mac", enabled: true },
+    { id: "dell", name: "Dell / 戴尔", enabled: true },
+    { id: "hp", name: "HP / 惠普", enabled: true },
+    { id: "lenovo", name: "Lenovo / 联想", enabled: true },
+    { id: "asus", name: "ASUS / 华硕", enabled: false },
+    { id: "acer", name: "Acer / 宏碁", enabled: false },
+    { id: "msi", name: "MSI / 微星", enabled: false },
+    { id: "microsoft", name: "Microsoft Surface", enabled: false }
+  ],
+  tablet: [
+    { id: "ipad", name: "iPad", enabled: true },
+    { id: "samsung-tablet", name: "Samsung Galaxy Tab", enabled: true },
+    { id: "huawei-tablet", name: "Huawei MatePad", enabled: true },
+    { id: "xiaomi-tablet", name: "Xiaomi Pad", enabled: true },
+    { id: "lenovo-tablet", name: "Lenovo Tab", enabled: false }
+  ],
+  appliance: [
+    { id: "midea", name: "美的 Midea", enabled: true },
+    { id: "haier", name: "海尔 Haier", enabled: true },
+    { id: "gree", name: "格力 Gree", enabled: true },
+    { id: "xiaomi-app", name: "小米智能家居", enabled: true },
+    { id: "panasonic", name: "松下 Panasonic", enabled: false }
+  ],
+  gaming: [
+    { id: "playstation", name: "PlayStation", enabled: true },
+    { id: "xbox", name: "Xbox", enabled: true },
+    { id: "nintendo", name: "Nintendo Switch", enabled: true },
+    { id: "valve", name: "Steam Deck", enabled: false }
+  ],
+  camera: [
+    { id: "canon", name: "Canon / 佳能", enabled: true },
+    { id: "nikon", name: "Nikon / 尼康", enabled: true },
+    { id: "sony-camera", name: "Sony / 索尼", enabled: true },
+    { id: "fujifilm", name: "Fujifilm / 富士", enabled: false },
+    { id: "gopro", name: "GoPro", enabled: false }
+  ],
+  wearable: [
+    { id: "apple-watch", name: "Apple Watch", enabled: true },
+    { id: "samsung-watch", name: "Samsung Galaxy Watch", enabled: true },
+    { id: "huawei-watch", name: "Huawei Watch", enabled: true },
+    { id: "xiaomi-watch", name: "Xiaomi / 小米手环", enabled: false },
+    { id: "fitbit", name: "Fitbit", enabled: false }
+  ],
+  other: [
+    { id: "drone", name: "无人机 / 航拍", enabled: true },
+    { id: "router", name: "路由器 / 网络设备", enabled: true },
+    { id: "printer", name: "打印机 / 扫描仪", enabled: true },
+    { id: "audio", name: "音频设备 / 音响", enabled: false }
+  ]
+};
+
+// 型号数据（按品牌组织）
+const modelsByBrand = {
+  // 手机品牌型号
+  "Apple / iPhone": [
+    "iPhone 17 Pro Max", "iPhone 17 Pro", "iPhone 17", "iPhone Air",
     "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16 Plus", "iPhone 16",
     "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15 Plus", "iPhone 15",
     "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14",
     "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13", "iPhone 13 mini",
     "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12", "iPhone 12 mini",
-    "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11", "iPhone XS Max", 
-    "iPhone XS", "iPhone XR", "iPhone X", "iPhone 8 Plus", "iPhone 8", 
-    "iPhone 7 Plus", "iPhone 7", "iPhone 6s Plus", "iPhone 6s", 
-    "iPhone SE (2020)", "iPhone SE (2016)"
-];
-
-const parts = [
-    { id: "screen", name: "屏幕", icon: "fas fa-mobile-alt" },
-    { id: "battery", name: "电池", icon: "fas fa-battery-full" },
-    { id: "camera", name: "摄像头", icon: "fas fa-camera" },
-    { id: "charging_port", name: "充电口", icon: "fas fa-plug" },
-    { id: "speaker", name: "扬声器", icon: "fas fa-volume-up" },
-    { id: "microphone", name: "麦克风", icon: "fas fa-microphone" },
-    { id: "back_cover", name: "后盖", icon: "fas fa-square" },
-    { id: "housing", name: "中框", icon: "fas fa-cube" },
-    { id: "logic_board", name: "主板", icon: "fas fa-microchip" },
-    { id: "charging_flex", name: "充电排线", icon: "fas fa-bolt" },
-    { id: "vibrator", name: "振动器", icon: "fas fa-vibrate" },
-    { id: "water_damage", name: "进水修复", icon: "fas fa-tint" }
-];
-
-// 部件名称别名映射（用于智能匹配）
-const PART_ALIASES = {
-    "屏幕": ["屏幕", "显示器", "显示屏", "液晶", "触摸屏", "外屏", "内屏", "display", "screen", "lcd", "oled"],
-    "电池": ["电池", "电芯", "电池续航", "battery", "cell"],
-    "摄像头": ["摄像头", "相机", "后摄", "前摄", "镜头", "camera", "lens", "rear camera", "front camera"],
-    "充电口": ["充电口", "充电接口", "尾插", "充电排线", "lightning", "usb-c", "charging port", "charge port"],
-    "扬声器": ["扬声器", "喇叭", "外放", "speaker", "loudspeaker"],
-    "麦克风": ["麦克风", "话筒", "送话器", "microphone", "mic"],
-    "后盖": ["后盖", "后壳", "背板", "back cover", "back glass", "rear housing"],
-    "中框": ["中框", "边框", "中壳", "housing", "frame", "middle frame"],
-    "主板": ["主板", "逻辑板", "pcb", "logic board", "mainboard"],
-    "充电排线": ["充电排线", "电池排线", "flex cable", "charge flex", "battery flex"],
-    "振动器": ["振动器", "震动马达", "振动马达", "vibrator", "haptic engine"],
-    "进水修复": ["进水", "液体损坏", "防水修复", "water damage", "liquid damage"]
+    "iPhone 11", "iPhone X"
+  ],
+  "Samsung / 三星": [
+    "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy S23 FE",
+    "Galaxy Z Fold5", "Galaxy Z Flip5", "Galaxy A54", "Galaxy A34"
+  ],
+  "Huawei / 华为": [
+    "Mate 60 Pro", "Mate 60", "P60 Pro", "P60", "P50 Pro", "nova 12"
+  ],
+  "Xiaomi / 小米": [
+    "Xiaomi 14 Pro", "Xiaomi 14", "Xiaomi 13 Ultra", "Xiaomi 13",
+    "Redmi K70", "Redmi Note 13 Pro"
+  ],
+  "OPPO": [
+    "Find X7 Ultra", "Find X7", "Reno 11 Pro", "Reno 11"
+  ],
+  "vivo": [
+    "X100 Pro", "X100", "X90 Pro+", "X90", "S18 Pro"
+  ],
+  
+  // 电脑品牌型号
+  "Apple Mac": [
+    "MacBook Air M3", "MacBook Air M2", "MacBook Pro 16\" M3",
+    "MacBook Pro 14\" M3", "iMac 24\" M3", "Mac mini M2", "Mac Studio"
+  ],
+  "Dell / 戴尔": [
+    "XPS 13", "XPS 15", "Inspiron 14", "Inspiron 16", "Alienware m16",
+    "Latitude 5440", "Precision 5680"
+  ],
+  "HP / 惠普": [
+    "Spectre x360 14", "Envy x360 15", "Pavilion 15", "Omen 16",
+    "Victus 16", "EliteBook 840 G10"
+  ],
+  "Lenovo / 联想": [
+    "ThinkPad X1 Carbon", "ThinkPad T14", "Yoga 9i", "Legion 5 Pro",
+    "IdeaPad Slim 5", "ThinkBook 14"
+  ],
+  
+  // 平板品牌型号
+  "iPad": [
+    "iPad Pro 12.9\" M2", "iPad Pro 11\" M2", "iPad Air M1", "iPad 10th Gen",
+    "iPad mini 6", "iPad 9th Gen"
+  ],
+  "Samsung Galaxy Tab": [
+    "Galaxy Tab S9 Ultra", "Galaxy Tab S9+", "Galaxy Tab S9",
+    "Galaxy Tab S8", "Galaxy Tab A9+"
+  ],
+  "Huawei MatePad": [
+    "MatePad Pro 13.2", "MatePad Pro 11", "MatePad 11.5",
+    "MatePad SE 10.4", "MatePad 10.4"
+  ],
+  "Xiaomi Pad": [
+    "Xiaomi Pad 6 Max", "Xiaomi Pad 6 Pro", "Xiaomi Pad 6",
+    "Xiaomi Pad 5 Pro", "Redmi Pad SE"
+  ],
+  
+  // 家电品牌型号
+  "美的 Midea": [
+    "微波炉 M1", "空调 KFR-35GW", "洗衣机 MB80V331", "冰箱 BCD-630WKPZM"
+  ],
+  "海尔 Haier": [
+    "洗衣机 EG10012B509G", "冰箱 BCD-601WGHSS", "空调 KFR-35GW", "热水器 ES60H"
+  ],
+  "格力 Gree": [
+    "空调 KFR-35GW", "电风扇 FS-40", "空气净化器 KJ700G", "除湿机 DH20EH"
+  ],
+  "小米智能家居": [
+    "小米空气净化器 4 Pro", "小米扫地机器人 2 Ultra", "小米净水器 600G",
+    "小米智能门锁 M20", "小米摄像头 云台版 2K"
+  ],
+  
+  // 游戏主机型号
+  "PlayStation": [
+    "PlayStation 5", "PlayStation 5 Slim", "PlayStation 5 Pro",
+    "PlayStation 4 Pro", "PlayStation 4 Slim", "PlayStation VR2"
+  ],
+  "Xbox": [
+    "Xbox Series X", "Xbox Series S", "Xbox One X", "Xbox One S",
+    "Xbox 360", "Xbox Elite Controller 2"
+  ],
+  "Nintendo Switch": [
+    "Nintendo Switch OLED", "Nintendo Switch", "Nintendo Switch Lite",
+    "Nintendo Switch Pro Controller", "Joy-Con 手柄"
+  ],
+  
+  // 相机品牌型号
+  "Canon / 佳能": [
+    "EOS R5", "EOS R6 Mark II", "EOS R8", "EOS R50", "EOS 5D Mark IV"
+  ],
+  "Nikon / 尼康": [
+    "Z9", "Z8", "Z7 II", "Z6 II", "Z5", "D850"
+  ],
+  "Sony / 索尼": [
+    "α7 IV", "α7R V", "α7C II", "α6700", "ZV-E1", "FX3"
+  ],
+  
+  // 智能穿戴型号
+  "Apple Watch": [
+    "Apple Watch Ultra 2", "Apple Watch Series 9", "Apple Watch SE 2",
+    "Apple Watch Series 8", "Apple Watch Series 7"
+  ],
+  "Samsung Galaxy Watch": [
+    "Galaxy Watch6 Classic", "Galaxy Watch6", "Galaxy Watch5 Pro",
+    "Galaxy Watch5", "Galaxy Watch4 Classic"
+  ],
+  "Huawei Watch": [
+    "Huawei Watch GT 4", "Huawei Watch 4", "Huawei Watch 3 Pro",
+    "Huawei Watch GT 3", "Huawei Watch Fit 2"
+  ],
+  
+  // 其他设备型号
+  "无人机 / 航拍": [
+    "DJI Air 3", "DJI Mini 4 Pro", "DJI Mavic 3 Pro", "DJI Avata",
+    "Autel EVO Lite+", "DJI Phantom 4 Pro V2.0"
+  ],
+  "路由器 / 网络设备": [
+    "TP-Link Archer AXE95", "小米路由器 AX9000", "华为路由器 AX3 Pro",
+    "华硕 RT-AX86U Pro", "网件 RAXE300"
+  ],
+  "打印机 / 扫描仪": [
+    "惠普 LaserJet Pro MFP", "爱普生 L4266", "佳能 TS3480",
+    "兄弟 DCP-T426W", "富士通 ScanSnap iX1600"
+  ]
 };
 
-const videos = [
-    { brand: "Apple", model: "iPhone 15 Pro Max", part: "屏幕", title: "iPhone 15 Pro Max 屏幕更换教程", videoFile: "video/iphone_15_pro_max_screen.mp4", duration: "12:30", uploaded: "2024-03-15" },
-    { brand: "Apple", model: "iPhone 15 Pro Max", part: "电池", title: "iPhone 15 Pro Max 电池更换指南", videoFile: "video/iphone_15_pro_max_battery.mp4", duration: "18:45", uploaded: "2024-03-10" },
-    { brand: "Apple", model: "iPhone 15 Pro", part: "屏幕", title: "iPhone 15 Pro 显示屏更换", videoFile: "video/iphone_15_pro_screen.mp4", duration: "14:20", uploaded: "2024-03-12" },
-    { brand: "Apple", model: "iPhone 15 Pro", part: "电池", title: "iPhone 15 Pro 电池维修", videoFile: "video/iphone_15_pro_battery.mp4", duration: "16:10", uploaded: "2024-03-08" },
-    { brand: "Apple", model: "iPhone 15 Plus", part: "屏幕", title: "iPhone 15 Plus 屏幕拆卸安装", videoFile: "video/iphone_15_plus_screen.mp4", duration: "11:15", uploaded: "2024-03-05" },
-    { brand: "Apple", model: "iPhone 15", part: "屏幕", title: "iPhone 15 屏幕总成更换", videoFile: "video/iphone_15_screen.mp4", duration: "10:40", uploaded: "2024-03-03" },
-    { brand: "Apple", model: "iPhone 15", part: "电池", title: "iPhone 15 电池更换步骤详解", videoFile: "video/iphone_15_battery.mp4", duration: "15:30", uploaded: "2024-02-28" },
-    { brand: "Apple", model: "iPhone 14 Pro Max", part: "屏幕", title: "iPhone 14 Pro Max 屏幕修复", videoFile: "video/iphone_14_pro_max_screen.mp4", duration: "13:25", uploaded: "2024-02-20" },
-    { brand: "Apple", model: "iPhone 14 Pro Max", part: "摄像头", title: "iPhone 14 Pro Max 后置摄像头更换", videoFile: "video/iphone_14_pro_max_camera.mp4", duration: "22:10", uploaded: "2024-02-18" },
-    { brand: "Apple", model: "iPhone 14 Pro", part: "屏幕", title: "iPhone 14 Pro 屏幕维修", videoFile: "video/iphone_14_pro_screen.mp4", duration: "12:50", uploaded: "2024-02-15" },
-    { brand: "Apple", model: "iPhone 13 Pro Max", part: "电池", title: "iPhone 13 Pro Max 电池更换教程", videoFile: "video/iphone_13_pro_max_battery.mp4", duration: "19:30", uploaded: "2024-02-10" },
-    { brand: "Apple", model: "iPhone 13 Pro", part: "屏幕", title: "iPhone 13 Pro 显示屏更换", videoFile: "video/iphone_13_pro_screen.mp4", duration: "13:15", uploaded: "2024-02-05" },
-    { brand: "Apple", model: "iPhone 13", part: "充电口", title: "iPhone 13 充电端口维修", videoFile: "video/iphone_13_charging_port.mp4", duration: "25:40", uploaded: "2024-02-01" },
-    { brand: "Apple", model: "iPhone 12 Pro Max", part: "屏幕", title: "iPhone 12 Pro Max 屏幕更换", videoFile: "video/iphone_12_pro_max_screen.mp4", duration: "11:20", uploaded: "2024-01-25" },
-    { brand: "Apple", model: "iPhone 12 Pro", part: "电池", title: "iPhone 12 Pro 电池维修指南", videoFile: "video/iphone_12_pro_battery.mp4", duration: "17:15", uploaded: "2024-01-20" },
-    { brand: "Apple", model: "iPhone 12", part: "屏幕", title: "iPhone 12 屏幕总成更换", videoFile: "video/iphone_12_screen.mp4", duration: "10:10", uploaded: "2024-01-15" },
-    { brand: "Apple", model: "iPhone 11 Pro Max", part: "摄像头", title: "iPhone 11 Pro Max 摄像头更换", videoFile: "video/iphone_11_pro_max_camera.mp4", duration: "20:30", uploaded: "2024-01-10" },
-    { brand: "Apple", model: "iPhone 11 Pro", part: "电池", title: "iPhone 11 Pro 电池更换", videoFile: "video/iphone_11_pro_battery.mp4", duration: "16:45", uploaded: "2024-01-05" },
-    { brand: "Apple", model: "iPhone 11", part: "屏幕", title: "iPhone 11 屏幕维修教程", videoFile: "video/iphone_11_screen.mp4", duration: "9:50", uploaded: "2024-01-01" },
-    { brand: "Apple", model: "iPhone XS Max", part: "电池", title: "iPhone XS Max 电池更换步骤", videoFile: "video/iphone_xs_max_battery.mp4", duration: "18:20", uploaded: "2023-12-25" },
-    { brand: "Apple", model: "iPhone XS", part: "屏幕", title: "iPhone XS 显示屏更换", videoFile: "video/iphone_xs_screen.mp4", duration: "12:10", uploaded: "2023-12-20" },
-    { brand: "Apple", model: "iPhone XR", part: "充电口", title: "iPhone XR 充电端口修复", videoFile: "video/iphone_xr_charging_port.mp4", duration: "24:30", uploaded: "2023-12-15" },
-    { brand: "Apple", model: "iPhone X", part: "屏幕", title: "iPhone X 屏幕更换教程", videoFile: "video/iphone_x_screen.mp4", duration: "14:40", uploaded: "2023-12-10" },
-    { brand: "Apple", model: "iPhone 8 Plus", part: "电池", title: "iPhone 8 Plus 电池维修", videoFile: "video/iphone_8_plus_battery.mp4", duration: "15:15", uploaded: "2023-12-05" },
-    { brand: "Apple", model: "iPhone 8", part: "屏幕", title: "iPhone 8 屏幕更换指南", videoFile: "video/iphone_8_screen.mp4", duration: "9:30", uploaded: "2023-12-01" }
-];
+// 故障部位数据（按分类组织不同的故障部位）
+const partsByCategory = {
+  phone: [
+    { id: "screen", name: "屏幕", icon: "📱" },
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "back", name: "后盖玻璃", icon: "🔲" },
+    { id: "camera", name: "摄像头", icon: "📷" },
+    { id: "charging", name: "充电口", icon: "⚡" },
+    { id: "speaker", name: "扬声器/听筒", icon: "🔊" },
+    { id: "faceid", name: "Face ID", icon: "👁️" },
+    { id: "button", name: "按键", icon: "🔘" },
+    { id: "board", name: "主板", icon: "🔌" }
+  ],
+  computer: [
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "screen", name: "屏幕", icon: "💻" },
+    { id: "keyboard", name: "键盘", icon: "⌨️" },
+    { id: "fan", name: "风扇/散热", icon: "🌀" },
+    { id: "ssd", name: "硬盘/SSD", icon: "💾" },
+    { id: "ram", name: "内存", icon: "🧠" },
+    { id: "ports", name: "接口/端口", icon: "🔌" },
+    { id: "motherboard", name: "主板", icon: "🔧" },
+    { id: "charging", name: "电源适配器", icon: "⚡" }
+  ],
+  tablet: [
+    { id: "screen", name: "屏幕", icon: "📱" },
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "housing", name: "外壳/边框", icon: "🔲" },
+    { id: "camera", name: "摄像头", icon: "📷" },
+    { id: "charging", name: "充电口", icon: "⚡" },
+    { id: "speaker", name: "扬声器", icon: "🔊" },
+    { id: "home", name: "Home 键", icon: "🔘" },
+    { id: "board", name: "主板", icon: "🔌" }
+  ],
+  appliance: [
+    { id: "power", name: "电源/电路", icon: "⚡" },
+    { id: "motor", name: "电机/马达", icon: "🌀" },
+    { id: "heating", name: "加热元件", icon: "🔥" },
+    { id: "cooling", name: "制冷系统", icon: "❄️" },
+    { id: "pump", name: "水泵", icon: "💧" },
+    { id: "sensor", name: "传感器", icon: "📡" },
+    { id: "control", name: "控制面板", icon: "🎛️" },
+    { id: "door", name: "门/密封", icon: "🚪" }
+  ],
+  gaming: [
+    { id: "disc", name: "光驱", icon: "💿" },
+    { id: "fan", name: "风扇/散热", icon: "🌀" },
+    { id: "power", name: "电源", icon: "⚡" },
+    { id: "hdmi", name: "HDMI 接口", icon: "🔌" },
+    { id: "controller", name: "手柄/控制器", icon: "🎮" },
+    { id: "housing", name: "外壳", icon: "🔲" },
+    { id: "thermal", name: "散热膏", icon: "🧴" },
+    { id: "motherboard", name: "主板", icon: "🔧" }
+  ],
+  camera: [
+    { id: "lens", name: "镜头", icon: "🔍" },
+    { id: "sensor", name: "传感器", icon: "📡" },
+    { id: "screen", name: "屏幕", icon: "📱" },
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "shutter", name: "快门", icon: "📸" },
+    { id: "card", name: "存储卡槽", icon: "💾" },
+    { id: "ports", name: "接口", icon: "🔌" },
+    { id: "housing", name: "机身", icon: "🔲" }
+  ],
+  wearable: [
+    { id: "screen", name: "屏幕", icon: "📱" },
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "strap", name: "表带", icon: "⌚" },
+    { id: "sensor", name: "传感器", icon: "📡" },
+    { id: "charging", name: "充电器", icon: "⚡" },
+    { id: "button", name: "按钮", icon: "🔘" },
+    { id: "housing", name: "外壳", icon: "🔲" },
+    { id: "board", name: "主板", icon: "🔌" }
+  ],
+  other: [
+    { id: "motor", name: "电机", icon: "🌀" },
+    { id: "battery", name: "电池", icon: "🔋" },
+    { id: "propeller", name: "螺旋桨", icon: "✈️" },
+    { id: "antenna", name: "天线", icon: "📡" },
+    { id: "ports", name: "接口", icon: "🔌" },
+    { id: "fan", name: "风扇", icon: "🌀" },
+    { id: "board", name: "主板", icon: "🔧" },
+    { id: "housing", name: "外壳", icon: "🔲" }
+  ]
+};
 
-const products = [
-    { title: "iPhone 15 Pro Max 原装屏幕总成", price: "¥899", platform: "天猫", models: ["iPhone 15 Pro Max"], part: "屏幕", image: "product/iphone_15_pro_max_screen.jpg" },
-    { title: "iPhone 15 Pro Max 高容量电池", price: "¥299", platform: "京东", models: ["iPhone 15 Pro Max"], part: "电池", image: "product/iphone_15_pro_max_battery.jpg" },
-    { title: "iPhone 15 Pro 原装屏幕总成", price: "¥799", platform: "天猫", models: ["iPhone 15 Pro"], part: "屏幕", image: "product/iphone_15_pro_screen.jpg" },
-    { title: "iPhone 15 Pro 高容量电池", price: "¥279", platform: "京东", models: ["iPhone 15 Pro"], part: "电池", image: "product/iphone_15_pro_battery.jpg" },
-    { title: "iPhone 15 Plus 原装屏幕总成", price: "¥699", platform: "天猫", models: ["iPhone 15 Plus"], part: "屏幕", image: "product/iphone_15_plus_screen.jpg" },
-    { title: "iPhone 15 原装屏幕总成", price: "¥599", platform: "天猫", models: ["iPhone 15"], part: "屏幕", image: "product/iphone_15_screen.jpg" },
-    { title: "iPhone 15 高容量电池", price: "¥259", platform: "京东", models: ["iPhone 15"], part: "电池", image: "product/iphone_15_battery.jpg" },
-    { title: "iPhone 14 Pro Max 原装屏幕", price: "¥849", platform: "天猫", models: ["iPhone 14 Pro Max"], part: "屏幕", image: "product/iphone_14_pro_max_screen.jpg" },
-    { title: "iPhone 14 Pro Max 摄像头模组", price: "¥459", platform: "京东", models: ["iPhone 14 Pro Max"], part: "摄像头", image: "product/iphone_14_pro_max_camera.jpg" },
-    { title: "iPhone 13 Pro Max 原装电池", price: "¥329", platform: "天猫", models: ["iPhone 13 Pro Max"], part: "电池", image: "product/iphone_13_pro_max_battery.jpg" },
-    { title: "iPhone 12 Pro Max 屏幕总成", price: "¥749", platform: "京东", models: ["iPhone 12 Pro Max"], part: "屏幕", image: "product/iphone_12_pro_max_screen.jpg" },
-    { title: "iPhone 11 Pro Max 摄像头", price: "¥389", platform: "天猫", models: ["iPhone 11 Pro Max"], part: "摄像头", image: "product/iphone_11_pro_max_camera.jpg" }
-];
+// 部位别名映射
+const PART_ALIASES = {
+  屏幕: ["屏幕", "显示面板", "Screen", "Display", "显示屏", "触摸屏"],
+  电池: ["电池", "電池", "Battery", "电源", "锂电池"],
+  后盖玻璃: ["后盖玻璃", "后盖", "後玻璃", "后玻璃", "Back Glass", "Rear Case", "背板"],
+  摄像头: ["摄像头", "后置摄像头", "前置摄像头", "Rear Camera", "Rear Cameras", "Front Camera", "main camera", "相机", "镜头"],
+  充电口: ["充电口", "Lightning 连接器组件", "Lightning Connector Assembly", "USB-C 端口", "Charging Port", "充电接口", "Type-C接口"],
+  扬声器: ["扬声器", "底部扬声器", "Lower Speaker", "Loudspeaker", "喇叭", "外放"],
+  听筒: ["听筒", "听筒扬声器", "耳机扬声器", "耳机扬声器和前传感器组件", "Earpiece Speaker", "Ear Speaker", "受话器"],
+  "Face ID": ["Face ID", "前传感器", "TrueDepth", "面容ID", "人脸识别"],
+  按键: ["按键", "Audio Control Cable", "音量", "电源按钮", "Side Button", "按钮", "开关"],
+  主板: ["主板", "逻辑板", "邏輯板", "Logic Board", "主电路板"]
+};
 
-// 当前选择的型号和部位
+// 当前状态
+let currentCategory = "phone";
+let currentBrand = "Apple / iPhone";
 let currentModel = "iPhone 15";
 let currentPart = "屏幕";
-let allGuidesData = null;
+let currentDifficulty = "all";
+let currentPlatform = "all";
 
-// 初始化页面
-document.addEventListener('DOMContentLoaded', function() {
-    renderModels();
-    renderParts();
-    updatePage();
-    loadPartThumbs();
-    initEventListeners();
-    initHomepageModules();
-});
+// DOM 元素
+const categoryList = document.getElementById("categoryList");
+const brandList = document.getElementById("brandList");
+const modelList = document.getElementById("modelList");
+const partList = document.getElementById("partList");
+const videoList = document.getElementById("videoList");
+const productList = document.getElementById("productList");
+const breadcrumb = document.getElementById("breadcrumb");
+const brandTitle = document.getElementById("brandTitle");
+const modelTitle = document.getElementById("modelTitle");
+const currentModelText = document.getElementById("currentModel");
+const currentPartText = document.getElementById("currentPart");
+const pageTitle = document.getElementById("pageTitle");
+const searchInput = document.getElementById("searchInput");
+const videoCount = document.getElementById("videoCount");
 
-// 渲染型号列表
-function renderModels() {
-    const modelList = document.getElementById('modelList');
-    modelList.innerHTML = '';
-    
-    models.forEach(model => {
-        const button = document.createElement('button');
-        button.className = 'model-btn';
-        button.textContent = model;
-        if (model === currentModel) {
-            button.classList.add('active');
-        }
-        button.onclick = () => {
-            currentModel = model;
-            renderModels();
-            updatePage();
-        };
-        modelList.appendChild(button);
-    });
+// 工具函数
+function getSiteBase() {
+  let path = window.location.pathname;
+  const lastSegment = path.split("/").pop() || "";
+  if (lastSegment.includes(".")) {
+    path = path.slice(0, path.lastIndexOf("/") + 1);
+  } else if (!path.endsWith("/")) {
+    path += "/";
+  }
+  return path;
 }
 
-// 渲染部位选择
-function renderParts() {
-    const partList = document.getElementById('partList');
-    partList.innerHTML = '';
-    
-    parts.forEach(part => {
-        const button = document.createElement('button');
-        button.className = 'part-btn';
-        button.innerHTML = `
-            <i class="${part.icon}"></i>
-            <span class="part-name">${part.name}</span>
-        `;
-        if (part.name === currentPart) {
-            button.classList.add('active');
-        }
-        button.onclick = () => {
-            currentPart = part.name;
-            renderParts();
-            updatePage();
-        };
-        partList.appendChild(button);
-    });
+const IFIXIT_IPHONE_BASE = getSiteBase() + "assets/ifixit/iphone/";
+let partThumbIndex = {};
+
+function normalizePartText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
-// 渲染视频列表
-function renderVideos() {
-    const videoList = document.getElementById('videoList');
-    const videoCount = document.getElementById('videoCount');
-    
-    // 筛选视频
-    const filteredVideos = videos.filter(video => 
-        video.model === currentModel && video.part === currentPart
+function partNameMatches(alias, scrapedName) {
+  const aliasNorm = normalizePartText(alias);
+  const scrapedNorm = normalizePartText(scrapedName);
+  if (!aliasNorm || !scrapedNorm) return false;
+  return (
+    scrapedNorm === aliasNorm ||
+    scrapedNorm.includes(aliasNorm) ||
+    aliasNorm.includes(scrapedNorm)
+  );
+}
+
+function findCanonicalPart(scrapedName) {
+  for (const [canonical, aliases] of Object.entries(PART_ALIASES)) {
+    if (aliases.some(alias => partNameMatches(alias, scrapedName))) {
+      return canonical;
+    }
+  }
+  return null;
+}
+
+function buildThumbSrc(model, filename) {
+  const path = `${IFIXIT_IPHONE_BASE}${model}/${filename}`;
+  return encodeURI(path);
+}
+
+function parseIphoneModel(model) {
+  if (model === "iPhone X") return { gen: 10, variant: "base" };
+  if (model === "iPhone Air") return { gen: 17, variant: "air" };
+
+  const match = model.match(/iPhone\s+(\d+)\s*(.*)$/i);
+  if (!match) return { gen: 0, variant: "base" };
+
+  const variantRaw = (match[2] || "").trim().toLowerCase();
+  let variant = "base";
+  if (variantRaw.includes("pro max")) variant = "pro max";
+  else if (variantRaw.includes("pro")) variant = "pro";
+  else if (variantRaw.includes("plus")) variant = "plus";
+  else if (variantRaw.includes("mini")) variant = "mini";
+  else if (variantRaw.includes("air")) variant = "air";
+
+  return { gen: parseInt(match[1], 10), variant };
+}
+
+function variantSimilarity(a, b) {
+  if (a === b) return 0;
+  const proFamily = new Set(["pro", "pro max"]);
+  if (proFamily.has(a) && proFamily.has(b)) return 1;
+  if ((a === "base" && b === "plus") || (a === "plus" && b === "base")) return 1;
+  if ((a === "base" && b === "mini") || (a === "mini" && b === "base")) return 1;
+  return 2;
+}
+
+function modelSimilarity(targetModel, candidateModel) {
+  const target = parseIphoneModel(targetModel);
+  const candidate = parseIphoneModel(candidateModel);
+  const genDiff = Math.abs(target.gen - candidate.gen);
+  const variantDiff = variantSimilarity(target.variant, candidate.variant);
+  const inSidebar = modelsByBrand[currentBrand]?.includes(candidateModel) ? 0 : 1;
+  return genDiff * 10 + variantDiff * 3 + inSidebar;
+}
+
+function getModelSearchOrder(targetModel) {
+  return Object.keys(partThumbIndex)
+    .filter(model => partThumbIndex[model])
+    .sort(
+      (a, b) =>
+        modelSimilarity(targetModel, a) - modelSimilarity(targetModel, b)
     );
+}
+
+function getCanonicalKeysForSitePart(sitePartName) {
+  if (sitePartName === "扬声器/听筒") return ["扬声器", "听筒"];
+  const canonical = findCanonicalPart(sitePartName);
+  if (canonical) return [canonical];
+  return [sitePartName];
+}
+
+function getThumbForSitePart(model, sitePartName) {
+  const partKeys = getCanonicalKeysForSitePart(sitePartName);
+
+  for (const candidateModel of getModelSearchOrder(model)) {
+    const modelMap = partThumbIndex[candidateModel];
+    if (!modelMap) continue;
+
+    for (const key of partKeys) {
+      if (modelMap[key]) {
+        return {
+          src: modelMap[key],
+          fromModel: candidateModel !== model ? candidateModel : null
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+async function loadPartThumbs() {
+  try {
+    const response = await fetch(`${IFIXIT_IPHONE_BASE}all_guides.json`);
+    if (!response.ok) return;
+
+    const guides = await response.json();
+    if (!Array.isArray(guides)) return;
+
+    const nextIndex = {};
+
+    guides.forEach(entry => {
+      const { model, part_name: partName, local_image_filename: filename } =
+        entry || {};
+      if (!model || !partName || !filename) return;
+
+      const canonical = findCanonicalPart(partName);
+      if (!canonical) return;
+
+      if (!nextIndex[model]) nextIndex[model] = {};
+      if (nextIndex[model][canonical]) return;
+
+      nextIndex[model][canonical] = buildThumbSrc(model, filename);
+    });
+
+    partThumbIndex = nextIndex;
+    const modelCount = Object.keys(nextIndex).length;
+    if (modelCount > 0) {
+      console.info(`已加载 ${modelCount} 个型号的部件缩略图。`);
+    }
+  } catch (error) {
+    console.warn("部件缩略图数据未加载，将仅显示文字。", error);
+  }
+}
+
+// 渲染函数
+function renderCategories() {
+  categoryList.innerHTML = "";
+  
+  categories.forEach(category => {
+    const button = document.createElement("button");
+    button.className = "category-btn";
+    button.dataset.category = category.id;
     
-    videoList.innerHTML = '';
-    videoCount.textContent = filteredVideos.length;
-    
-    if (filteredVideos.length === 0) {
-        videoList.innerHTML = `
-            <div class="video-error-message">
-                <i class="fas fa-video-slash" style="font-size: 48px; margin-bottom: 16px; color: #9ca3af;"></i>
-                <h3>暂无相关维修视频</h3>
-                <p>当前筛选条件下没有找到匹配的维修视频。</p>
-                <p>请尝试选择其他型号或故障部位。</p>
-            </div>
-        `;
-        return;
+    if (category.id === currentCategory) {
+      button.classList.add("active");
     }
     
-    filteredVideos.forEach(video => {
-        const videoCard = document.createElement('div');
-        videoCard.className = 'video-card';
-        videoCard.innerHTML = `
-            <div class="video-container">
-                <div class="video-play-button">
-                    <i class="fas fa-play"></i>
-                </div>
-                <video preload="metadata" onclick="togglePlay(this)">
-                    <source src="${video.videoFile}" type="video/mp4">
-                    您的浏览器不支持视频播放
-                </video>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">${escapeHtml(video.title)}</h3>
-                <div class="video-meta">
-                    <span>${video.model}</span>
-                    <span>${video.duration}</span>
-                    <span class="video-uploaded">已上传 ${video.uploaded}</span>
-                </div>
-                <p class="video-description">${getVideoDescription(video)}</p>
-            </div>
-        `;
-        videoList.appendChild(videoCard);
-    });
-}
-
-// 渲染商品列表
-function renderProducts() {
-    const productList = document.getElementById('productList');
-    const productCount = document.getElementById('productCount');
+    button.innerHTML = `
+      <span class="category-icon">${category.icon}</span>
+      <span class="category-text">
+        <strong>${category.name}</strong>
+        <small>${category.description}</small>
+      </span>
+    `;
     
-    // 筛选商品
-    const filteredProducts = products.filter(product => 
-        product.models.includes(currentModel) && product.part === currentPart
-    );
-    
-    productList.innerHTML = '';
-    productCount.textContent = filteredProducts.length;
-    
-    if (filteredProducts.length === 0) {
-        productList.innerHTML = `
-            <div class="video-error-message">
-                <i class="fas fa-shopping-bag" style="font-size: 48px; margin-bottom: 16px; color: #9ca3af;"></i>
-                <h3>暂无相关配件商品</h3>
-                <p>当前筛选条件下没有找到匹配的配件商品。</p>
-                <p>请尝试选择其他型号或故障部位。</p>
-            </div>
-        `;
-        return;
-    }
-    
-    filteredProducts.forEach(product => {
-        const productCard = document.createElement('a');
-        productCard.className = 'product-card';
-        productCard.href = '#';
-        productCard.innerHTML = `
-            <div class="product-image">
-                <img src="${product.image}" alt="${escapeHtml(product.title)}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x120/f3f4f6/6b7280?text=Product+Image'">
-            </div>
-            <div class="product-info">
-                <h4 class="product-title">${escapeHtml(product.title)}</h4>
-                <div class="product-price">${product.price}</div>
-                <div class="product-platform">平台：${product.platform}</div>
-                <div class="product-models">适用：${product.models.join(', ')}</div>
-            </div>
-        `;
-        productList.appendChild(productCard);
-    });
-}
-
-// 获取视频描述
-function getVideoDescription(video) {
-    const descriptions = {
-        "屏幕": "本视频详细讲解如何安全拆卸和安装屏幕总成，包括注意事项和常见问题解决方法。",
-        "电池": "完整的电池更换教程，包含安全注意事项、工具使用方法和测试步骤。",
-        "摄像头": "摄像头模块更换指南，包含对焦测试和清洁步骤。",
-        "充电口": "充电端口维修教程，解决充电问题和数据连接故障。",
-        "扬声器": "扬声器更换指南，包含音频测试和质量检查。",
-        "麦克风": "麦克风模块更换，解决通话和录音问题。"
+    button.onclick = () => {
+      currentCategory = category.id;
+      
+      // 更新品牌列表标题
+      const categoryObj = categories.find(c => c.id === currentCategory);
+      brandTitle.innerHTML = `<i class="fas fa-tags"></i> ${categoryObj.name}品牌`;
+      
+      // 重置品牌和型号
+      const availableBrands = brandsByCategory[currentCategory] || [];
+      currentBrand = availableBrands.find(b => b.enabled)?.name || availableBrands[0]?.name || "";
+      
+      if (currentBrand && modelsByBrand[currentBrand]) {
+        currentModel = modelsByBrand[currentBrand][0] || "";
+      } else {
+        currentModel = "";
+      }
+      
+      updatePage();
     };
     
-    return descriptions[video.part] || "专业的维修教程，详细讲解每个步骤和注意事项。";
+    categoryList.appendChild(button);
+  });
 }
 
-// 更新页面
-function updatePage() {
-    // 更新面包屑
-    const breadcrumb = document.getElementById('breadcrumb');
-    if (breadcrumb) {
-        breadcrumb.innerHTML = `
-            <span onclick="resetSelection()" style="cursor: pointer;">首页</span> > 
-            <span>Apple</span> > 
-            <span>${currentModel}</span> > 
-            <span>${currentPart}</span>
-        `;
+function renderBrands() {
+  brandList.innerHTML = "";
+  
+  const brands = brandsByCategory[currentCategory] || [];
+  
+  if (brands.length === 0) {
+    brandList.innerHTML = '<p class="empty-message">暂无品牌数据</p>';
+    return;
+  }
+  
+  brands.forEach(brand => {
+    const button = document.createElement("button");
+    button.className = "brand-btn";
+    
+    if (brand.name === currentBrand) {
+      button.classList.add("active");
     }
     
-    // 更新页面标题
-    const pageTitle = document.getElementById('pageTitle');
-    if (pageTitle) {
-        pageTitle.textContent = `${currentModel} ${currentPart}维修指南`;
+    if (!brand.enabled) {
+      button.classList.add("disabled");
+      button.title = "即将上线，敬请期待";
     }
     
-    // 渲染视频和商品
-    renderVideos();
-    renderProducts();
+    button.textContent = brand.name;
     
-    // 更新热门指南模块显示
-    updateHomepageVisibility();
+    button.onclick = () => {
+      if (!brand.enabled) return;
+      
+      currentBrand = brand.name;
+      
+      // 更新型号列表标题
+      modelTitle.innerHTML = `<i class="fas fa-mobile-alt"></i> ${brand.name} 型号`;
+      
+      // 重置型号
+      if (modelsByBrand[currentBrand] && modelsByBrand[currentBrand].length > 0) {
+        currentModel = modelsByBrand[currentBrand][0];
+      } else {
+        currentModel = "";
+      }
+      
+      updatePage();
+    };
+    
+    brandList.appendChild(button);
+  });
 }
 
-// 重置选择
-function reset
+function renderModels() {
+  modelList.innerHTML = "";
+  
+  const models = modelsByBrand[currentBrand] || [];
+  
+  if (models.length === 0) {
+    modelList.innerHTML = '<p class="empty-message">暂无型号数据</p
