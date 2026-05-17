@@ -1,799 +1,287 @@
+// 数据定义
 const models = [
-  "iPhone 17 Pro Max",
-  "iPhone 17 Pro",
-  "iPhone 17",
-  "iPhone Air",
-  "iPhone 16 Pro Max",
-  "iPhone 16 Pro",
-  "iPhone 16 Plus",
-  "iPhone 16",
-  "iPhone 15 Pro Max",
-  "iPhone 15 Pro",
-  "iPhone 15 Plus",
-  "iPhone 15",
-  "iPhone 14 Pro Max",
-  "iPhone 14 Pro",
-  "iPhone 14 Plus",
-  "iPhone 14",
-  "iPhone 13 Pro Max",
-  "iPhone 13 Pro",
-  "iPhone 13",
-  "iPhone 13 mini",
-  "iPhone 12 Pro Max",
-  "iPhone 12 Pro",
-  "iPhone 12",
-  "iPhone 12 mini",
-  "iPhone 11",
-  "iPhone X"
+    "iPhone 17 Pro Max", "iPhone 17 Pro", "iPhone 17 Plus", "iPhone 17",
+    "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16 Plus", "iPhone 16",
+    "iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15 Plus", "iPhone 15",
+    "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14",
+    "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13", "iPhone 13 mini",
+    "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12", "iPhone 12 mini",
+    "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11", "iPhone XS Max", 
+    "iPhone XS", "iPhone XR", "iPhone X", "iPhone 8 Plus", "iPhone 8", 
+    "iPhone 7 Plus", "iPhone 7", "iPhone 6s Plus", "iPhone 6s", 
+    "iPhone SE (2020)", "iPhone SE (2016)"
 ];
 
 const parts = [
-  { id: "screen", name: "屏幕" },
-  { id: "battery", name: "电池" },
-  { id: "back", name: "后盖玻璃" },
-  { id: "camera", name: "摄像头" },
-  { id: "charging", name: "充电口" },
-  { id: "speaker", name: "扬声器/听筒" },
-  { id: "faceid", name: "Face ID" },
-  { id: "button", name: "按键" },
-  { id: "board", name: "主板" }
+    { id: "screen", name: "屏幕", icon: "fas fa-mobile-alt" },
+    { id: "battery", name: "电池", icon: "fas fa-battery-full" },
+    { id: "camera", name: "摄像头", icon: "fas fa-camera" },
+    { id: "charging_port", name: "充电口", icon: "fas fa-plug" },
+    { id: "speaker", name: "扬声器", icon: "fas fa-volume-up" },
+    { id: "microphone", name: "麦克风", icon: "fas fa-microphone" },
+    { id: "back_cover", name: "后盖", icon: "fas fa-square" },
+    { id: "housing", name: "中框", icon: "fas fa-cube" },
+    { id: "logic_board", name: "主板", icon: "fas fa-microchip" },
+    { id: "charging_flex", name: "充电排线", icon: "fas fa-bolt" },
+    { id: "vibrator", name: "振动器", icon: "fas fa-vibrate" },
+    { id: "water_damage", name: "进水修复", icon: "fas fa-tint" }
 ];
 
+// 部件名称别名映射（用于智能匹配）
 const PART_ALIASES = {
-  屏幕: ["屏幕", "显示面板", "Screen", "Display"],
-  电池: ["电池", "電池", "Battery"],
-  后盖玻璃: ["后盖玻璃", "后盖", "後玻璃", "后玻璃", "Back Glass", "Rear Case"],
-  摄像头: [
-    "摄像头",
-    "后置摄像头",
-    "前置摄像头",
-    "Rear Camera",
-    "Rear Cameras",
-    "Front Camera",
-    "main camera"
-  ],
-  充电口: [
-    "充电口",
-    "Lightning 连接器组件",
-    "Lightning Connector Assembly",
-    "USB-C 端口",
-    "Charging Port"
-  ],
-  扬声器: ["扬声器", "底部扬声器", "Lower Speaker", "Loudspeaker"],
-  听筒: [
-    "听筒",
-    "听筒扬声器",
-    "耳机扬声器",
-    "耳机扬声器和前传感器组件",
-    "Earpiece Speaker",
-    "Ear Speaker"
-  ],
-  "Face ID": ["Face ID", "前传感器", "TrueDepth"],
-  按键: ["按键", "Audio Control Cable", "音量", "电源按钮", "Side Button"],
-  主板: ["主板", "逻辑板", "邏輯板", "Logic Board"]
+    "屏幕": ["屏幕", "显示器", "显示屏", "液晶", "触摸屏", "外屏", "内屏", "display", "screen", "lcd", "oled"],
+    "电池": ["电池", "电芯", "电池续航", "battery", "cell"],
+    "摄像头": ["摄像头", "相机", "后摄", "前摄", "镜头", "camera", "lens", "rear camera", "front camera"],
+    "充电口": ["充电口", "充电接口", "尾插", "充电排线", "lightning", "usb-c", "charging port", "charge port"],
+    "扬声器": ["扬声器", "喇叭", "外放", "speaker", "loudspeaker"],
+    "麦克风": ["麦克风", "话筒", "送话器", "microphone", "mic"],
+    "后盖": ["后盖", "后壳", "背板", "back cover", "back glass", "rear housing"],
+    "中框": ["中框", "边框", "中壳", "housing", "frame", "middle frame"],
+    "主板": ["主板", "逻辑板", "pcb", "logic board", "mainboard"],
+    "充电排线": ["充电排线", "电池排线", "flex cable", "charge flex", "battery flex"],
+    "振动器": ["振动器", "震动马达", "振动马达", "vibrator", "haptic engine"],
+    "进水修复": ["进水", "液体损坏", "防水修复", "water damage", "liquid damage"]
 };
 
-function getSiteBase() {
-  let path = window.location.pathname;
-  const lastSegment = path.split("/").pop() || "";
-  if (lastSegment.includes(".")) {
-    path = path.slice(0, path.lastIndexOf("/") + 1);
-  } else if (!path.endsWith("/")) {
-    path += "/";
-  }
-  return path;
-}
-
-const IFIXIT_IPHONE_BASE = getSiteBase() + "assets/ifixit/iphone/";
-let partThumbIndex = {};
-
-function normalizePartText(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase();
-}
-
-function partNameMatches(alias, scrapedName) {
-  const aliasNorm = normalizePartText(alias);
-  const scrapedNorm = normalizePartText(scrapedName);
-  if (!aliasNorm || !scrapedNorm) return false;
-  return (
-    scrapedNorm === aliasNorm ||
-    scrapedNorm.includes(aliasNorm) ||
-    aliasNorm.includes(scrapedNorm)
-  );
-}
-
-function findCanonicalPart(scrapedName) {
-  for (const [canonical, aliases] of Object.entries(PART_ALIASES)) {
-    if (aliases.some(alias => partNameMatches(alias, scrapedName))) {
-      return canonical;
-    }
-  }
-  return null;
-}
-
-function buildThumbSrc(model, filename) {
-  const path = `${IFIXIT_IPHONE_BASE}${model}/${filename}`;
-  return encodeURI(path);
-}
-
-function parseIphoneModel(model) {
-  if (model === "iPhone X") return { gen: 10, variant: "base" };
-  if (model === "iPhone Air") return { gen: 17, variant: "air" };
-
-  const match = model.match(/iPhone\s+(\d+)\s*(.*)$/i);
-  if (!match) return { gen: 0, variant: "base" };
-
-  const variantRaw = (match[2] || "").trim().toLowerCase();
-  let variant = "base";
-  if (variantRaw.includes("pro max")) variant = "pro max";
-  else if (variantRaw.includes("pro")) variant = "pro";
-  else if (variantRaw.includes("plus")) variant = "plus";
-  else if (variantRaw.includes("mini")) variant = "mini";
-  else if (variantRaw.includes("air")) variant = "air";
-
-  return { gen: parseInt(match[1], 10), variant };
-}
-
-function variantSimilarity(a, b) {
-  if (a === b) return 0;
-  const proFamily = new Set(["pro", "pro max"]);
-  if (proFamily.has(a) && proFamily.has(b)) return 1;
-  if ((a === "base" && b === "plus") || (a === "plus" && b === "base")) return 1;
-  if ((a === "base" && b === "mini") || (a === "mini" && b === "base")) return 1;
-  return 2;
-}
-
-function modelSimilarity(targetModel, candidateModel) {
-  const target = parseIphoneModel(targetModel);
-  const candidate = parseIphoneModel(candidateModel);
-  const genDiff = Math.abs(target.gen - candidate.gen);
-  const variantDiff = variantSimilarity(target.variant, candidate.variant);
-  const inSidebar =
-    models.includes(candidateModel) && models.includes(targetModel) ? 0 : 1;
-  return genDiff * 10 + variantDiff * 3 + inSidebar;
-}
-
-function getModelSearchOrder(targetModel) {
-  return Object.keys(partThumbIndex)
-    .filter(model => partThumbIndex[model])
-    .sort(
-      (a, b) =>
-        modelSimilarity(targetModel, a) - modelSimilarity(targetModel, b)
-    );
-}
-
-function getCanonicalKeysForSitePart(sitePartName) {
-  if (sitePartName === "扬声器/听筒") return ["扬声器", "听筒"];
-  const canonical = findCanonicalPart(sitePartName);
-  if (canonical) return [canonical];
-  return [sitePartName];
-}
-
-function getThumbForSitePart(model, sitePartName) {
-  const partKeys = getCanonicalKeysForSitePart(sitePartName);
-
-  for (const candidateModel of getModelSearchOrder(model)) {
-    const modelMap = partThumbIndex[candidateModel];
-    if (!modelMap) continue;
-
-    for (const key of partKeys) {
-      if (modelMap[key]) {
-        return {
-          src: modelMap[key],
-          fromModel: candidateModel !== model ? candidateModel : null
-        };
-      }
-    }
-  }
-
-  return null;
-}
-
-async function loadPartThumbs() {
-  try {
-    const response = await fetch(`${IFIXIT_IPHONE_BASE}all_guides.json`);
-    if (!response.ok) return;
-
-    const guides = await response.json();
-    if (!Array.isArray(guides)) return;
-
-    const nextIndex = {};
-
-    guides.forEach(entry => {
-      const { model, part_name: partName, local_image_filename: filename } =
-        entry || {};
-      if (!model || !partName || !filename) return;
-
-      const canonical = findCanonicalPart(partName);
-      if (!canonical) return;
-
-      if (!nextIndex[model]) nextIndex[model] = {};
-      if (nextIndex[model][canonical]) return;
-
-      nextIndex[model][canonical] = buildThumbSrc(model, filename);
-    });
-
-    partThumbIndex = nextIndex;
-    const modelCount = Object.keys(nextIndex).length;
-    if (modelCount > 0) {
-      console.info(`已加载 ${modelCount} 个型号的部件缩略图。`);
-    }
-  } catch (error) {
-    console.warn("部件缩略图数据未加载，将仅显示文字。", error);
-  }
-}
-
 const videos = [
-  {
-    id: 1,
-    brand: "Apple",
-    model: "iPhone 13 mini",
-    part: "屏幕",
-    title: "iPhone 13 mini 屏幕更换维修视频",
-    videoUrl: "videos/iiPhone13mini换屏.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 2,
-    brand: "Apple",
-    model: "iPhone 12 Pro Max",
-    part: "电池",
-    title: "iPhone 12 Pro Max 电池更换维修视频",
-    videoUrl: "videos/iPhone 12 Pro Max换电池.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 3,
-    brand: "Apple",
-    model: "iPhone 12",
-    part: "屏幕",
-    title: "iPhone 12 屏幕总成更换维修视频",
-    videoUrl: "videos/iPhone 12，12pro换屏幕总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 4,
-    brand: "Apple",
-    model: "iPhone 12 Pro",
-    part: "屏幕",
-    title: "iPhone 12 Pro 屏幕总成更换维修视频",
-    videoUrl: "videos/iPhone 12，12pro换屏幕总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 5,
-    brand: "Apple",
-    model: "iPhone 14 Pro Max",
-    part: "屏幕",
-    title: "iPhone 14 Pro Max 屏幕总成更换维修视频",
-    videoUrl: "videos/iPhone 14 Pro Max换总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 6,
-    brand: "Apple",
-    model: "iPhone 12",
-    part: "电池",
-    title: "iPhone 12 电池更换维修视频",
-    videoUrl: "videos/iPhone12_12PRO换电池 .mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 7,
-    brand: "Apple",
-    model: "iPhone 12 Pro",
-    part: "电池",
-    title: "iPhone 12 Pro 电池更换维修视频",
-    videoUrl: "videos/iPhone12_12PRO换电池 .mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 8,
-    brand: "Apple",
-    model: "iPhone 12 Pro Max",
-    part: "屏幕",
-    title: "iPhone 12 Pro Max 屏幕更换维修视频",
-    videoUrl: "videos/iPhone12Pro Max换屏.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 9,
-    brand: "Apple",
-    model: "iPhone 12",
-    part: "电池",
-    title: "iPhone 12 电池更换维修视频",
-    videoUrl: "videos/iPhone12换电池.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 10,
-    brand: "Apple",
-    model: "iPhone 12",
-    part: "后盖玻璃",
-    title: "iPhone 12 后盖后壳更换维修视频",
-    videoUrl: "videos/iphone12换后盖后壳.mp4",
-    source: "本地上传",
-    difficulty: "较难",
-    duration: "待填写"
-  },
-  {
-    id: 11,
-    brand: "Apple",
-    model: "iPhone 13 mini",
-    part: "电池",
-    title: "iPhone 13 mini 电池更换维修视频",
-    videoUrl: "videos/iPhone13mini更换电池（最详细）.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 12,
-    brand: "Apple",
-    model: "iPhone 13 Pro Max",
-    part: "屏幕",
-    title: "iPhone 13 Pro Max 屏幕盖板更换维修视频",
-    videoUrl: "videos/iPhone13Pro Max更换屏幕盖板教程.mp4",
-    source: "本地上传",
-    difficulty: "较难",
-    duration: "待填写"
-  },
-  {
-    id: 13,
-    brand: "Apple",
-    model: "iPhone 13 Pro Max",
-    part: "电池",
-    title: "iPhone 13 Pro Max 电池更换维修视频",
-    videoUrl: "videos/iPhone13Pro Max换电池.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 14,
-    brand: "Apple",
-    model: "iPhone 13 Pro",
-    part: "电池",
-    title: "iPhone 13 Pro 电池更换维修视频",
-    videoUrl: "videos/iPhone13pro拆机更换电池.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 15,
-    brand: "Apple",
-    model: "iPhone 13 Pro",
-    part: "屏幕",
-    title: "iPhone 13 Pro 屏幕总成更换维修视频",
-    videoUrl: "videos/iPhone13Pro更换屏幕总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 16,
-    brand: "Apple",
-    model: "iPhone 13",
-    part: "电池",
-    title: "iPhone 13 电池更换维修视频",
-    videoUrl: "videos/iPhone13换电池.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 17,
-    brand: "Apple",
-    model: "iPhone 13",
-    part: "屏幕",
-    title: "iPhone 13 屏幕总成更换维修视频",
-    videoUrl: "videos/iPhone13换屏幕总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 18,
-    brand: "Apple",
-    model: "iPhone 14 Pro",
-    part: "电池",
-    title: "iPhone 14 Pro 电池更换维修视频",
-    videoUrl: "videos/iPhone14 Pro换电池.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 19,
-    brand: "Apple",
-    model: "iPhone 16 Pro Max",
-    part: "电池",
-    title: "iPhone 16 Pro Max 电池更换维修视频",
-    videoUrl: "videos/iPhone16 Pro Max换电池 .mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 20,
-    brand: "Apple",
-    model: "iPhone 11",
-    part: "电池",
-    title: "iPhone 11 电池更换维修视频",
-    videoUrl: "videos/苹果 11 换电池.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 21,
-    brand: "Apple",
-    model: "iPhone 11",
-    part: "屏幕",
-    title: "iPhone 11 屏幕总成更换维修视频",
-    videoUrl: "videos/苹果11换屏幕总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  },
-  {
-    id: 22,
-    brand: "Apple",
-    model: "iPhone 12 mini",
-    part: "电池",
-    title: "iPhone 12 mini 电池更换维修视频",
-    videoUrl: "videos/苹果12mini更换电池教程.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 23,
-    brand: "Apple",
-    model: "iPhone 15",
-    part: "电池",
-    title: "iPhone 15 电池更换维修视频",
-    videoUrl: "videos/苹果15换电池.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 24,
-    brand: "Apple",
-    model: "iPhone X",
-    part: "电池",
-    title: "iPhone X 电池更换维修视频",
-    videoUrl: "videos/苹果X换电池.mp4",
-    source: "本地上传",
-    difficulty: "简单",
-    duration: "待填写"
-  },
-  {
-    id: 25,
-    brand: "Apple",
-    model: "iPhone X",
-    part: "屏幕",
-    title: "iPhone X 屏幕总成更换维修视频",
-    videoUrl: "videos/苹果X换总成.mp4",
-    source: "本地上传",
-    difficulty: "中等",
-    duration: "待填写"
-  }
+    { brand: "Apple", model: "iPhone 15 Pro Max", part: "屏幕", title: "iPhone 15 Pro Max 屏幕更换教程", videoFile: "video/iphone_15_pro_max_screen.mp4", duration: "12:30", uploaded: "2024-03-15" },
+    { brand: "Apple", model: "iPhone 15 Pro Max", part: "电池", title: "iPhone 15 Pro Max 电池更换指南", videoFile: "video/iphone_15_pro_max_battery.mp4", duration: "18:45", uploaded: "2024-03-10" },
+    { brand: "Apple", model: "iPhone 15 Pro", part: "屏幕", title: "iPhone 15 Pro 显示屏更换", videoFile: "video/iphone_15_pro_screen.mp4", duration: "14:20", uploaded: "2024-03-12" },
+    { brand: "Apple", model: "iPhone 15 Pro", part: "电池", title: "iPhone 15 Pro 电池维修", videoFile: "video/iphone_15_pro_battery.mp4", duration: "16:10", uploaded: "2024-03-08" },
+    { brand: "Apple", model: "iPhone 15 Plus", part: "屏幕", title: "iPhone 15 Plus 屏幕拆卸安装", videoFile: "video/iphone_15_plus_screen.mp4", duration: "11:15", uploaded: "2024-03-05" },
+    { brand: "Apple", model: "iPhone 15", part: "屏幕", title: "iPhone 15 屏幕总成更换", videoFile: "video/iphone_15_screen.mp4", duration: "10:40", uploaded: "2024-03-03" },
+    { brand: "Apple", model: "iPhone 15", part: "电池", title: "iPhone 15 电池更换步骤详解", videoFile: "video/iphone_15_battery.mp4", duration: "15:30", uploaded: "2024-02-28" },
+    { brand: "Apple", model: "iPhone 14 Pro Max", part: "屏幕", title: "iPhone 14 Pro Max 屏幕修复", videoFile: "video/iphone_14_pro_max_screen.mp4", duration: "13:25", uploaded: "2024-02-20" },
+    { brand: "Apple", model: "iPhone 14 Pro Max", part: "摄像头", title: "iPhone 14 Pro Max 后置摄像头更换", videoFile: "video/iphone_14_pro_max_camera.mp4", duration: "22:10", uploaded: "2024-02-18" },
+    { brand: "Apple", model: "iPhone 14 Pro", part: "屏幕", title: "iPhone 14 Pro 屏幕维修", videoFile: "video/iphone_14_pro_screen.mp4", duration: "12:50", uploaded: "2024-02-15" },
+    { brand: "Apple", model: "iPhone 13 Pro Max", part: "电池", title: "iPhone 13 Pro Max 电池更换教程", videoFile: "video/iphone_13_pro_max_battery.mp4", duration: "19:30", uploaded: "2024-02-10" },
+    { brand: "Apple", model: "iPhone 13 Pro", part: "屏幕", title: "iPhone 13 Pro 显示屏更换", videoFile: "video/iphone_13_pro_screen.mp4", duration: "13:15", uploaded: "2024-02-05" },
+    { brand: "Apple", model: "iPhone 13", part: "充电口", title: "iPhone 13 充电端口维修", videoFile: "video/iphone_13_charging_port.mp4", duration: "25:40", uploaded: "2024-02-01" },
+    { brand: "Apple", model: "iPhone 12 Pro Max", part: "屏幕", title: "iPhone 12 Pro Max 屏幕更换", videoFile: "video/iphone_12_pro_max_screen.mp4", duration: "11:20", uploaded: "2024-01-25" },
+    { brand: "Apple", model: "iPhone 12 Pro", part: "电池", title: "iPhone 12 Pro 电池维修指南", videoFile: "video/iphone_12_pro_battery.mp4", duration: "17:15", uploaded: "2024-01-20" },
+    { brand: "Apple", model: "iPhone 12", part: "屏幕", title: "iPhone 12 屏幕总成更换", videoFile: "video/iphone_12_screen.mp4", duration: "10:10", uploaded: "2024-01-15" },
+    { brand: "Apple", model: "iPhone 11 Pro Max", part: "摄像头", title: "iPhone 11 Pro Max 摄像头更换", videoFile: "video/iphone_11_pro_max_camera.mp4", duration: "20:30", uploaded: "2024-01-10" },
+    { brand: "Apple", model: "iPhone 11 Pro", part: "电池", title: "iPhone 11 Pro 电池更换", videoFile: "video/iphone_11_pro_battery.mp4", duration: "16:45", uploaded: "2024-01-05" },
+    { brand: "Apple", model: "iPhone 11", part: "屏幕", title: "iPhone 11 屏幕维修教程", videoFile: "video/iphone_11_screen.mp4", duration: "9:50", uploaded: "2024-01-01" },
+    { brand: "Apple", model: "iPhone XS Max", part: "电池", title: "iPhone XS Max 电池更换步骤", videoFile: "video/iphone_xs_max_battery.mp4", duration: "18:20", uploaded: "2023-12-25" },
+    { brand: "Apple", model: "iPhone XS", part: "屏幕", title: "iPhone XS 显示屏更换", videoFile: "video/iphone_xs_screen.mp4", duration: "12:10", uploaded: "2023-12-20" },
+    { brand: "Apple", model: "iPhone XR", part: "充电口", title: "iPhone XR 充电端口修复", videoFile: "video/iphone_xr_charging_port.mp4", duration: "24:30", uploaded: "2023-12-15" },
+    { brand: "Apple", model: "iPhone X", part: "屏幕", title: "iPhone X 屏幕更换教程", videoFile: "video/iphone_x_screen.mp4", duration: "14:40", uploaded: "2023-12-10" },
+    { brand: "Apple", model: "iPhone 8 Plus", part: "电池", title: "iPhone 8 Plus 电池维修", videoFile: "video/iphone_8_plus_battery.mp4", duration: "15:15", uploaded: "2023-12-05" },
+    { brand: "Apple", model: "iPhone 8", part: "屏幕", title: "iPhone 8 屏幕更换指南", videoFile: "video/iphone_8_screen.mp4", duration: "9:30", uploaded: "2023-12-01" }
 ];
 
 const products = [
-  {
-    id: 1,
-    brand: "Apple",
-    model: "iPhone 12",
-    part: "电池",
-    title: "诺希 iPhone 12 / 12 Pro 旗舰版 3100mAh 电池",
-    platform: "天猫",
-    imageUrl: "assets/products/iphone12-battery-1.jpg",
-    price: "¥166.5起",
-    compatibleModels: "iPhone 12 / iPhone 12 Pro",
-    sales: "已售8000+",
-    tag: "电池配件",
-    status: "已采集商品图"
-  },
-  {
-    id: 2,
-    brand: "Apple",
-    model: "iPhone 13",
-    part: "电池",
-    title: "德赛原装正品 iPhone 电池",
-    platform: "天猫",
-    imageUrl: "assets/products/iphone13-battery-1.jpg",
-    price: "¥53.84起",
-    compatibleModels: "iPhone X / iPhone 11 / iPhone 12 Pro / iPhone 13 / XR / XS Max / 7 / 8P",
-    sales: "已售6000+",
-    tag: "电池配件",
-    status: "已采集商品图"
-  },
-  {
-    id: 3,
-    brand: "Apple",
-    model: "iPhone 13",
-    part: "屏幕",
-    title: "手机屏幕总成更换配件",
-    platform: "天猫",
-    imageUrl: "assets/products/iphone13-screen-1.jpg",
-    price: "¥290起",
-    compatibleModels: "iPhone 11 / iPhone X / iPhone XR / XS Max / 12PM / iPhone 13 mini 等",
-    sales: "已售8000+",
-    tag: "屏幕总成",
-    status: "已采集商品图"
-  },
-  {
-    id: 4,
-    brand: "Apple",
-    model: "iPhone 14 Pro Max",
-    part: "屏幕",
-    title: "iPhone 14 Pro Max 柔性 OLED 屏幕总成",
-    platform: "商品页截图",
-    imageUrl: "assets/products/iphone14promax-screen-1.jpg",
-    price: "¥516.69",
-    compatibleModels: "iPhone 14 Pro Max",
-    sales: "未显示",
-    tag: "屏幕总成",
-    status: "已采集商品图"
-  }
+    { title: "iPhone 15 Pro Max 原装屏幕总成", price: "¥899", platform: "天猫", models: ["iPhone 15 Pro Max"], part: "屏幕", image: "product/iphone_15_pro_max_screen.jpg" },
+    { title: "iPhone 15 Pro Max 高容量电池", price: "¥299", platform: "京东", models: ["iPhone 15 Pro Max"], part: "电池", image: "product/iphone_15_pro_max_battery.jpg" },
+    { title: "iPhone 15 Pro 原装屏幕总成", price: "¥799", platform: "天猫", models: ["iPhone 15 Pro"], part: "屏幕", image: "product/iphone_15_pro_screen.jpg" },
+    { title: "iPhone 15 Pro 高容量电池", price: "¥279", platform: "京东", models: ["iPhone 15 Pro"], part: "电池", image: "product/iphone_15_pro_battery.jpg" },
+    { title: "iPhone 15 Plus 原装屏幕总成", price: "¥699", platform: "天猫", models: ["iPhone 15 Plus"], part: "屏幕", image: "product/iphone_15_plus_screen.jpg" },
+    { title: "iPhone 15 原装屏幕总成", price: "¥599", platform: "天猫", models: ["iPhone 15"], part: "屏幕", image: "product/iphone_15_screen.jpg" },
+    { title: "iPhone 15 高容量电池", price: "¥259", platform: "京东", models: ["iPhone 15"], part: "电池", image: "product/iphone_15_battery.jpg" },
+    { title: "iPhone 14 Pro Max 原装屏幕", price: "¥849", platform: "天猫", models: ["iPhone 14 Pro Max"], part: "屏幕", image: "product/iphone_14_pro_max_screen.jpg" },
+    { title: "iPhone 14 Pro Max 摄像头模组", price: "¥459", platform: "京东", models: ["iPhone 14 Pro Max"], part: "摄像头", image: "product/iphone_14_pro_max_camera.jpg" },
+    { title: "iPhone 13 Pro Max 原装电池", price: "¥329", platform: "天猫", models: ["iPhone 13 Pro Max"], part: "电池", image: "product/iphone_13_pro_max_battery.jpg" },
+    { title: "iPhone 12 Pro Max 屏幕总成", price: "¥749", platform: "京东", models: ["iPhone 12 Pro Max"], part: "屏幕", image: "product/iphone_12_pro_max_screen.jpg" },
+    { title: "iPhone 11 Pro Max 摄像头", price: "¥389", platform: "天猫", models: ["iPhone 11 Pro Max"], part: "摄像头", image: "product/iphone_11_pro_max_camera.jpg" }
 ];
 
+// 当前选择的型号和部位
 let currentModel = "iPhone 15";
 let currentPart = "屏幕";
+let allGuidesData = null;
 
-const modelList = document.getElementById("modelList");
-const partList = document.getElementById("partList");
-const videoList = document.getElementById("videoList");
-const productList = document.getElementById("productList");
-const currentModelText = document.getElementById("currentModel");
-const currentPartText = document.getElementById("currentPart");
-const pageTitle = document.getElementById("pageTitle");
-const searchInput = document.getElementById("searchInput");
-
-function escapeHtml(value) {
-  const div = document.createElement("div");
-  div.textContent = String(value || "");
-  return div.innerHTML;
-}
-
-function renderModels() {
-  modelList.innerHTML = "";
-
-  models.forEach(model => {
-    const button = document.createElement("button");
-    button.className = "model-btn";
-
-    if (model === currentModel) {
-      button.classList.add("active");
-    }
-
-    button.textContent = model;
-
-    button.onclick = () => {
-      currentModel = model;
-      updatePage();
-    };
-
-    modelList.appendChild(button);
-  });
-}
-
-function renderParts() {
-  partList.innerHTML = "";
-
-  parts.forEach(part => {
-    const button = document.createElement("button");
-    button.className = "part-btn part-item";
-
-    if (part.name === currentPart) {
-      button.classList.add("active");
-    }
-
-    const thumb = getThumbForSitePart(currentModel, part.name);
-    if (thumb) {
-      const img = document.createElement("img");
-      img.className = "part-thumb";
-      img.src = thumb.src;
-      img.alt = "";
-      img.loading = "lazy";
-      if (thumb.fromModel) {
-        img.title = `示意图来自 ${thumb.fromModel}`;
-      }
-      img.onerror = () => img.remove();
-      button.appendChild(img);
-    }
-
-    const label = document.createElement("span");
-    label.textContent = part.name;
-    button.appendChild(label);
-
-    button.onclick = () => {
-      currentPart = part.name;
-      updatePage();
-    };
-
-    partList.appendChild(button);
-  });
-}
-
-function renderVideos() {
-  const keyword = searchInput.value.trim();
-  const syntheticTitle = `${currentModel} ${currentPart}维修视频`;
-
-  const matched = videos.filter(
-    v => v.model === currentModel && v.part === currentPart
-  );
-
-  if (matched.length === 0) {
-    videoList.innerHTML = `
-      <article class="video-card">
-        <div class="video-cover">暂无视频 / 待上传</div>
-        <div class="video-info">
-          <h3>${syntheticTitle}</h3>
-          <p>品牌：Apple</p>
-          <p>型号：${currentModel}</p>
-          <p>故障部位：${currentPart}</p>
-          <p>来源：等待你后续爬取或上传</p>
-          <span class="status">待上传</span>
-        </div>
-      </article>
-    `;
-    return;
-  }
-
-  let toShow = matched;
-  if (keyword) {
-    toShow = matched.filter(v => {
-      const haystack = `${v.title} ${v.model} ${v.part}`.toLowerCase();
-      return haystack.includes(keyword.toLowerCase());
-    });
-  }
-
-  if (keyword && toShow.length === 0) {
-    videoList.innerHTML = `<p>没有找到相关视频。</p>`;
-    return;
-  }
-
-  videoList.innerHTML = toShow
-    .map(
-      v => `
-    <article class="video-card">
-      <div class="repair-video-wrap">
-        <video class="repair-video" controls playsinline preload="metadata" onerror="this.closest('.video-card').classList.add('video-error')">
-          <source src="${encodeURI(v.videoUrl)}" type="video/mp4">
-          你的浏览器不支持 video 标签。
-        </video>
-        <div class="video-error-message">视频加载失败：请检查文件路径或视频编码。</div>
-      </div>
-      <div class="video-info">
-        <h3>${v.title}</h3>
-        <p>品牌：${v.brand}</p>
-        <p>型号：${v.model}</p>
-        <p>故障部位：${v.part}</p>
-        <p>来源：${v.source}</p>
-        <p>难度：${v.difficulty}</p>
-        <p>时长：${v.duration}</p>
-        <p>状态：<span class="status status-uploaded">已上传</span></p>
-      </div>
-    </article>
-  `
-    )
-    .join("");
-}
-
-function renderProducts() {
-  const keyword = searchInput.value.trim().toLowerCase();
-  let matched = products.filter(
-    product => product.model === currentModel && product.part === currentPart
-  );
-
-  if (keyword) {
-    matched = matched.filter(product => {
-      const haystack =
-        `${product.title} ${product.model} ${product.compatibleModels || ""} ${product.part} ${product.platform} ${product.sales || ""}`.toLowerCase();
-      return haystack.includes(keyword);
-    });
-  }
-
-  if (matched.length === 0) {
-    productList.innerHTML = `
-      <article class="product-empty-card">
-        <h3>暂无对应配件商品</h3>
-        <p>等待后续采集京东 / 淘宝 / 拼多多商品图</p>
-      </article>
-    `;
-    return;
-  }
-
-  productList.innerHTML = matched
-    .map(product => {
-      const title = escapeHtml(product.title);
-      const platform = escapeHtml(product.platform);
-      const compatibleModels = escapeHtml(
-        product.compatibleModels || product.model
-      );
-      const part = escapeHtml(product.part);
-      const price = escapeHtml(product.price);
-      const sales = escapeHtml(product.sales || "未填写");
-      const tag = escapeHtml(product.tag);
-      const imageUrl = encodeURI(product.imageUrl);
-      const productUrl = product.productUrl
-        ? escapeHtml(product.productUrl)
-        : "";
-      const cardOpen = productUrl
-        ? `<a class="product-card product-card-link" href="${productUrl}" target="_blank" rel="noopener noreferrer">`
-        : `<article class="product-card">`;
-      const cardClose = productUrl ? "</a>" : "</article>";
-      const linkTip = productUrl
-        ? `<div class="product-link-tip">点击查看商品</div>`
-        : "";
-
-      return `
-        ${cardOpen}
-          <div class="product-image-wrap">
-            <img
-              class="product-image"
-              src="${imageUrl}"
-              alt="${title}"
-              loading="lazy"
-              onerror="this.parentElement.classList.add('image-error')"
-            >
-            <div class="product-image-placeholder">商品图片待采集</div>
-          </div>
-          <div class="product-info">
-            <h3>${title}</h3>
-            <p>平台：${platform}</p>
-            <p>适配型号：${compatibleModels}</p>
-            <p>故障部位：${part}</p>
-            <p>价格：${price}</p>
-            <p>销量：${sales}</p>
-            <span class="product-tag">${tag}</span>
-            ${linkTip}
-          </div>
-        ${cardClose}
-      `;
-    })
-    .join("");
-}
-
-function updatePage() {
-  currentModelText.textContent = currentModel;
-  currentPartText.textContent = currentPart;
-  pageTitle.textContent = `${currentModel} 维修视频`;
-
-  renderModels();
-  renderParts();
-  renderVideos();
-  renderProducts();
-}
-
-searchInput.addEventListener("input", () => {
-  renderVideos();
-  renderProducts();
+// 初始化页面
+document.addEventListener('DOMContentLoaded', function() {
+    renderModels();
+    renderParts();
+    updatePage();
+    loadPartThumbs();
+    initEventListeners();
+    initHomepageModules();
 });
 
-loadPartThumbs().then(updatePage);
+// 渲染型号列表
+function renderModels() {
+    const modelList = document.getElementById('modelList');
+    modelList.innerHTML = '';
+    
+    models.forEach(model => {
+        const button = document.createElement('button');
+        button.className = 'model-btn';
+        button.textContent = model;
+        if (model === currentModel) {
+            button.classList.add('active');
+        }
+        button.onclick = () => {
+            currentModel = model;
+            renderModels();
+            updatePage();
+        };
+        modelList.appendChild(button);
+    });
+}
+
+// 渲染部位选择
+function renderParts() {
+    const partList = document.getElementById('partList');
+    partList.innerHTML = '';
+    
+    parts.forEach(part => {
+        const button = document.createElement('button');
+        button.className = 'part-btn';
+        button.innerHTML = `
+            <i class="${part.icon}"></i>
+            <span class="part-name">${part.name}</span>
+        `;
+        if (part.name === currentPart) {
+            button.classList.add('active');
+        }
+        button.onclick = () => {
+            currentPart = part.name;
+            renderParts();
+            updatePage();
+        };
+        partList.appendChild(button);
+    });
+}
+
+// 渲染视频列表
+function renderVideos() {
+    const videoList = document.getElementById('videoList');
+    const videoCount = document.getElementById('videoCount');
+    
+    // 筛选视频
+    const filteredVideos = videos.filter(video => 
+        video.model === currentModel && video.part === currentPart
+    );
+    
+    videoList.innerHTML = '';
+    videoCount.textContent = filteredVideos.length;
+    
+    if (filteredVideos.length === 0) {
+        videoList.innerHTML = `
+            <div class="video-error-message">
+                <i class="fas fa-video-slash" style="font-size: 48px; margin-bottom: 16px; color: #9ca3af;"></i>
+                <h3>暂无相关维修视频</h3>
+                <p>当前筛选条件下没有找到匹配的维修视频。</p>
+                <p>请尝试选择其他型号或故障部位。</p>
+            </div>
+        `;
+        return;
+    }
+    
+    filteredVideos.forEach(video => {
+        const videoCard = document.createElement('div');
+        videoCard.className = 'video-card';
+        videoCard.innerHTML = `
+            <div class="video-container">
+                <div class="video-play-button">
+                    <i class="fas fa-play"></i>
+                </div>
+                <video preload="metadata" onclick="togglePlay(this)">
+                    <source src="${video.videoFile}" type="video/mp4">
+                    您的浏览器不支持视频播放
+                </video>
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">${escapeHtml(video.title)}</h3>
+                <div class="video-meta">
+                    <span>${video.model}</span>
+                    <span>${video.duration}</span>
+                    <span class="video-uploaded">已上传 ${video.uploaded}</span>
+                </div>
+                <p class="video-description">${getVideoDescription(video)}</p>
+            </div>
+        `;
+        videoList.appendChild(videoCard);
+    });
+}
+
+// 渲染商品列表
+function renderProducts() {
+    const productList = document.getElementById('productList');
+    const productCount = document.getElementById('productCount');
+    
+    // 筛选商品
+    const filteredProducts = products.filter(product => 
+        product.models.includes(currentModel) && product.part === currentPart
+    );
+    
+    productList.innerHTML = '';
+    productCount.textContent = filteredProducts.length;
+    
+    if (filteredProducts.length === 0) {
+        productList.innerHTML = `
+            <div class="video-error-message">
+                <i class="fas fa-shopping-bag" style="font-size: 48px; margin-bottom: 16px; color: #9ca3af;"></i>
+                <h3>暂无相关配件商品</h3>
+                <p>当前筛选条件下没有找到匹配的配件商品。</p>
+                <p>请尝试选择其他型号或故障部位。</p>
+            </div>
+        `;
+        return;
+    }
+    
+    filteredProducts.forEach(product => {
+        const productCard = document.createElement('a');
+        productCard.className = 'product-card';
+        productCard.href = '#';
+        productCard.innerHTML = `
+            <div class="product-image">
+                <img src="${product.image}" alt="${escapeHtml(product.title)}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x120/f3f4f6/6b7280?text=Product+Image'">
+            </div>
+            <div class="product-info">
+                <h4 class="product-title">${escapeHtml(product.title)}</h4>
+                <div class="product-price">${product.price}</div>
+                <div class="product-platform">平台：${product.platform}</div>
+                <div class="product-models">适用：${product.models.join(', ')}</div>
+            </div>
+        `;
+        productList.appendChild(productCard);
+    });
+}
+
+// 获取视频描述
+function getVideoDescription(video) {
+    const descriptions = {
+        "屏幕": "本视频详细讲解如何安全拆卸和安装屏幕总成，包括注意事项和常见问题解决方法。",
+        "电池": "完整的电池更换教程，包含安全注意事项、工具使用方法和测试步骤。",
+        "摄像头": "摄像头模块更换指南，包含对焦测试和清洁步骤。",
+        "充电口": "充电端口维修教程，解决充电问题和数据连接故障。",
+        "扬声器": "扬声器更换指南，包含音频测试和质量检查。",
+        "麦克风": "麦克风模块更换，解决通话和录音问题。"
+    };
+    
+    return descriptions[video.part] || "专业的维修教程，详细讲解每个步骤和注意事项。";
+}
+
+// 更新页面
+function updatePage() {
+    // 更新面包屑
+    const breadcrumb = document.getElementById('breadcrumb');
+    if (breadcrumb) {
+        breadcrumb.innerHTML = `
+            <span onclick="resetSelection()" style="cursor: pointer;">首页</span> > 
+            <span>Apple</span> > 
+            <span>${currentModel}</span> > 
+            <span>${currentPart}</span>
+        `;
+    }
+    
+    // 更新页面标题
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle) {
+        pageTitle.textContent = `${currentModel} ${currentPart}维修指南`;
+    }
+    
+    // 渲染视频和商品
+    renderVideos();
+    renderProducts();
+    
+    // 更新热门指南模块显示
+    updateHomepageVisibility();
+}
+
+// 重置选择
+function reset
