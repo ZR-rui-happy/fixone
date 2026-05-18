@@ -7,15 +7,40 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topbar">
+  <!-- 顶部固定搜索栏 -->
+  <header class="global-search-header">
+    <div class="search-header-content">
+      <div class="site-logo">
+        <svg class="logo-icon" width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 4H30C31.1046 4 32 4.89543 32 6V34C32 35.1046 31.1046 36 30 36H10C8.89543 36 8 35.1046 8 34V6C8 4.89543 8.89543 4 10 4Z" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 14H32" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 4V8C14 9.10457 13.1046 10 12 10H10" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M26 10C26.5523 10 27 9.55228 27 9C27 8.44772 26.5523 8 26 8C25.4477 8 25 8.44772 25 9C25 9.55228 25.4477 10 26 10Z" fill="#2563EB"/>
+          <path d="M20 20L20 20C21.1046 20 22 19.1046 22 18L22 14C22 12.8954 21.1046 12 20 12L20 12C18.8954 12 18 12.8954 18 14L18 18C18 19.1046 18.8954 20 20 20Z" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 26L24 26" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">Fixone</span>
+      </div>
+      <div class="global-search-container">
+        <input
+          id="globalSearchInput"
+          class="global-search"
+          type="text"
+          placeholder="搜索全站内容：品牌、型号、故障、视频标题、商品..."
+        />
+        <button id="globalSearchBtn" class="search-btn">🔍</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="topbar">
     <div>
       <h1>家电维修视频站</h1>
       <p>按品类、品牌、型号、故障部位查找维修视频</p>
     </div>
-  </header>
+  </div>
 
   <main class="layout">
-    <!-- 新增：品类选择侧边栏 -->
     <aside class="sidebar category-sidebar">
       <section class="panel">
         <h2>品类</h2>
@@ -28,7 +53,6 @@
       </section>
     </aside>
 
-    <!-- 原有侧边栏，现在作为“品牌与型号”区域 -->
     <aside class="sidebar brand-sidebar">
       <section class="panel">
         <h2 id="brandPanelTitle">品牌</h2>
@@ -49,12 +73,7 @@
           <span id="currentCategory">手机</span> > <span id="currentBrand">Apple</span> > <span id="currentModel">iPhone 15</span> > <span id="currentPart">屏幕</span>
         </p>
         <h2 id="pageTitle">iPhone 15 维修视频</h2>
-        <input
-          id="searchInput"
-          class="search"
-          type="text"
-          placeholder="搜索型号、故障、视频标题"
-        />
+        <!-- 删除原搜索栏，已移动到顶部 -->
       </section>
 
       <section class="panel">
